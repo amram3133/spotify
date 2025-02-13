@@ -19,21 +19,10 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install dependencies (yt-dlp, FFmpeg, Puppeteer)
+      - name: Install dependencies
         run: |
           pip install yt-dlp
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg wget unzip
-
-          # ✅ התקנה מחדש של Puppeteer בצורה תקינה
-          npm install puppeteer --global
-
-          # ✅ בדיקה אם Puppeteer מותקן כמו שצריך
-          if ! node -e "require.resolve('puppeteer')"; then
-            echo "❌ Puppeteer installation failed!"
-            exit 1
-          fi
-          echo "✅ Puppeteer installed successfully."
+          sudo apt update && sudo apt install -y google-chrome-stable ffmpeg
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
       - name: Create cookies.txt from GitHub Secrets
@@ -53,17 +42,15 @@ jobs:
           fi
           echo "===== Showing first 20 lines of cookies.txt ====="
           head -n 20 cookies.txt
-          echo "===== Showing special characters ====="
-          od -c cookies.txt
 
       # ✅ הורדת הסרטון מ-YouTube עם `cookies.txt`
       - name: Download YouTube Video (Full Video)
         run: |
-          yt-dlp -f "bv*[ext=mp4]+ba*[ext=m4a]/b[ext=mp4]" --merge-output-format mp4 \
+          yt-dlp -f bestvideo+bestaudio --merge-output-format mp4 \
           --cookies cookies.txt \
           -o "episode.mp4" "$(jq -r '.id' episode.json)"
 
-      # ✅ בדיקה אם קובץ הווידאו קיים
+      # ✅ בדיקה אם קובץ הווידאו נוצר
       - name: Verify Video File
         run: |
           if [ -f "episode.mp4" ]; then
@@ -73,13 +60,20 @@ jobs:
             echo "❌ Video file is missing!"
             exit 1
           fi
-          
-# ✅ העלאת הסרטון ל-Spotify תוך שימוש בנתיב הנכון של Chrome
-      - name: Upload Video Episode to Spotify (Using Cookies)
-        uses: ./
+
+      # ✅ התקנת Puppeteer ודפדפן Chrome
+      - name: Install Puppeteer and Chrome
+        run: |
+          npm install puppeteer
+          sudo apt install -y google-chrome-stable
+          echo "✅ Puppeteer and Chrome installed successfully!"
+
+      # ✅ העלאת הסרטון ל-Spotify תוך שימוש ב-Puppeteer
+      - name: Upload Video Episode to Spotify (Using Puppeteer)
+        uses: Schroedinger-Hat/youtube-to-spotify@v2.5.0
         env:
           SPOTIFY_EMAIL: ${{ secrets.SPOTIFY_EMAIL }}
           SPOTIFY_PASSWORD: ${{ secrets.SPOTIFY_PASSWORD }}
-          EPISODE_PATH: /github/workspace
+          EPISODE_PATH: "/github/workspace"
+          CHROME_PATH: "/usr/bin/google-chrome-stable"
           YOUTUBE_COOKIES_PATH: "/github/workspace/cookies.txt"
-          PUPPETEER_EXECUTABLE_PATH: "$(node -e "console.log(require('puppeteer').executablePath())")"
