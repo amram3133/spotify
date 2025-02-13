@@ -29,10 +29,6 @@ jobs:
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo apt install -y ./google-chrome-stable_current_amd64.deb
 
-          # ✅ מציאת הנתיב של Google Chrome
-          echo "Google Chrome installed at:"
-          which google-chrome-stable
-
           # ✅ התקנת Puppeteer
           npm install puppeteer@latest --global
           npm install puppeteer-core@latest --global
@@ -41,8 +37,16 @@ jobs:
           npx puppeteer browsers install chrome
 
           # ✅ בדיקת גרסאות
-          google-chrome-stable --version
+          google-chrome-stable --version || echo "Chrome not found!"
           npx puppeteer --version
+
+      - name: Debug Chrome Path
+        run: |
+          echo "🔎 Checking Chrome installation..."
+          which google-chrome || echo "❌ google-chrome not found"
+          which google-chrome-stable || echo "❌ google-chrome-stable not found"
+          which chromium || echo "❌ chromium not found"
+          echo "✅ If any of the above commands returned a path, use it for Puppeteer."
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
       - name: Create cookies.txt from GitHub Secrets
@@ -83,7 +87,7 @@ jobs:
             exit 1
           fi
 
-      # ✅ העלאת הסרטון ל-Spotify תוך שימוש ב-`cookies.txt`
+      # ✅ העלאת הסרטון ל-Spotify תוך שימוש בנתיב הנכון של Chrome
       - name: Upload Video Episode to Spotify (Using Cookies)
         uses: ./
         env:
