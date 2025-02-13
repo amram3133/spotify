@@ -24,20 +24,21 @@ jobs:
           pip install yt-dlp
           sudo apt-get update
           sudo apt-get install -y ffmpeg wget unzip
-          
+
           # ✅ הורדת והתקנת Google Chrome
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo apt install -y ./google-chrome-stable_current_amd64.deb
-          
-          # ✅ התקנת Puppeteer
-          npm install puppeteer@21.9.0 --global
-          npm install puppeteer-core@21.9.0 --global
-          
+
+          # ✅ התקנת Puppeteer - גרסה עדכנית
+          npm install puppeteer@latest --global
+          npm install puppeteer-core@latest --global
+
           # ✅ התקנת Chrome בתוך Puppeteer
           npx puppeteer browsers install chrome
 
-          # ✅ וידוא ש-Chrome זמין
+          # ✅ בדיקת גרסאות
           google-chrome --version
+          npx puppeteer --version
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
       - name: Create cookies.txt from GitHub Secrets
