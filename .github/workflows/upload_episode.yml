@@ -29,7 +29,11 @@ jobs:
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo apt install -y ./google-chrome-stable_current_amd64.deb
 
-          # ✅ התקנת Puppeteer - גרסה עדכנית
+          # ✅ מציאת הנתיב של Google Chrome
+          echo "Google Chrome installed at:"
+          which google-chrome-stable
+
+          # ✅ התקנת Puppeteer
           npm install puppeteer@latest --global
           npm install puppeteer-core@latest --global
 
@@ -37,7 +41,7 @@ jobs:
           npx puppeteer browsers install chrome
 
           # ✅ בדיקת גרסאות
-          google-chrome --version
+          google-chrome-stable --version
           npx puppeteer --version
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
@@ -87,4 +91,4 @@ jobs:
           SPOTIFY_PASSWORD: ${{ secrets.SPOTIFY_PASSWORD }}
           EPISODE_PATH: /github/workspace
           YOUTUBE_COOKIES_PATH: "/github/workspace/cookies.txt"
-          PUPPETEER_EXECUTABLE_PATH: "/usr/bin/google-chrome"
+          PUPPETEER_EXECUTABLE_PATH: "/usr/bin/google-chrome-stable"
