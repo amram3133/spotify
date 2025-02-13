@@ -73,13 +73,13 @@ jobs:
             echo "❌ Video file is missing!"
             exit 1
           fi
-
-      # ✅ העלאת הסרטון ל-Spotify תוך שימוש בנתיב הוודאי של Puppeteer
+          
+      # ✅ העלאת הסרטון ל-Spotify תוך שימוש בנתיב Puppeteer
       - name: Upload Video Episode to Spotify (Using Puppeteer)
         uses: ./
         env:
-          SPOTIFY_EMAIL: ${{ secrets.SPOTIFY_EMAIL }}
-          SPOTIFY_PASSWORD: ${{ secrets.SPOTIFY_PASSWORD }}
-          EPISODE_PATH: /github/workspace
+          SPOTIFY_EMAIL: "${{ secrets.SPOTIFY_EMAIL }}"
+          SPOTIFY_PASSWORD: "${{ secrets.SPOTIFY_PASSWORD }}"
+          EPISODE_PATH: "/github/workspace"
           YOUTUBE_COOKIES_PATH: "/github/workspace/cookies.txt"
           PUPPETEER_EXECUTABLE_PATH: "$(node -e "console.log(require('puppeteer').executablePath())")"
