@@ -1,0 +1,71 @@
+name: Upload Episode from YouTube To Spotify
+
+on:
+  push:
+    paths:
+      - episode.json
+    branches: [main]
+
+jobs:
+  upload_episode:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+
+      - name: Install yt-dlp
+        run: pip install yt-dlp
+
+      # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
+      - name: Create cookies.txt from GitHub Secrets
+        run: |
+          echo "${{ secrets.YOUTUBE_COOKIES }}" | tr -d '\r' > cookies.txt
+          echo "✅ Created cookies.txt successfully!"
+
+      # ✅ בדיקה אם הקובץ `cookies.txt` נוצר כהלכה
+      - name: Debug cookies file
+        run: |
+          echo "===== Debugging cookies.txt ====="
+          if [ -f cookies.txt ]; then
+            echo "✅ cookies.txt exists!"
+          else
+            echo "❌ cookies.txt is missing!"
+            exit 1
+          fi
+          echo "===== Showing first 20 lines of cookies.txt ====="
+          head -n 20 cookies.txt
+          echo "===== Showing special characters ====="
+          od -c cookies.txt
+
+      # ✅ הורדת הסרטון מ-YouTube עם `cookies.txt`
+      - name: Download YouTube Video (Full Video)
+        run: |
+          yt-dlp -f bestvideo+bestaudio --merge-output-format mp4 \
+          --cookies cookies.txt \
+          -o "episode.mp4" "$(jq -r '.id' episode.json)"
+
+      # ✅ בדיקה אם קובץ הווידאו קיים
+      - name: Verify Video File
+        run: |
+          if [ -f "episode.mp4" ]; then
+            echo "✅ Video file exists: episode.mp4"
+            ls -lh episode.mp4
+          else
+            echo "❌ Video file is missing!"
+            exit 1
+          fi
+
+      # ✅ העלאת הסרטון ל-Spotify תוך שימוש ב-`cookies.txt`
+      - name: Upload Video Episode to Spotify (Using Cookies)
+        uses: ./
+        env:
+          SPOTIFY_EMAIL: ${{ secrets.SPOTIFY_EMAIL }}
+          SPOTIFY_PASSWORD: ${{ secrets.SPOTIFY_PASSWORD }}
+          EPISODE_PATH: /github/workspace
+          YOUTUBE_COOKIES_PATH: "/github/workspace/cookies.txt"
