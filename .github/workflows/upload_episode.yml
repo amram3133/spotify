@@ -24,10 +24,11 @@ jobs:
           pip install yt-dlp
           sudo apt update && sudo apt install -y google-chrome-stable ffmpeg
 
-      - name: Install Puppeteer with Built-in Chrome
-        run: |
-        npm install puppeteer@latest
-        npx puppeteer browsers install chrome
+- name: Install Puppeteer with Built-in Chrome
+  run: |
+    npm install puppeteer@latest
+    npx puppeteer browsers install chrome
+
 
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
