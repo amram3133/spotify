@@ -26,14 +26,11 @@ jobs:
           sudo apt-get install -y ffmpeg wget unzip
 
           # ✅ התקנה מחדש של Puppeteer בצורה תקינה
+          npm uninstall puppeteer --global || true
           npm install puppeteer --global
 
           # ✅ בדיקה אם Puppeteer מותקן כמו שצריך
-          if ! node -e "require.resolve('puppeteer')"; then
-            echo "❌ Puppeteer installation failed!"
-            exit 1
-          fi
-          echo "✅ Puppeteer installed successfully."
+          node -e "console.log(require.resolve('puppeteer'))" || exit 1
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
       - name: Create cookies.txt from GitHub Secrets
