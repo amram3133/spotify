@@ -19,10 +19,11 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install yt-dlp and FFmpeg
+      - name: Install dependencies (yt-dlp, FFmpeg, Chrome, Puppeteer)
         run: |
           pip install yt-dlp
-          sudo apt-get update && sudo apt-get install -y ffmpeg
+          sudo apt-get update && sudo apt-get install -y ffmpeg google-chrome-stable
+          npm install puppeteer --global
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
       - name: Create cookies.txt from GitHub Secrets
