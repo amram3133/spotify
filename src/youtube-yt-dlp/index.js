@@ -25,8 +25,10 @@ function getDownloadThumbnailOptions() {
     writeThumbnail: true,
     convertThumbnail: THUMBNAIL_FILE_FORMAT,
     o: env.THUMBNAIL_FILE_TEMPLATE,
+    cookies: "/github/workspace/cookies.txt",  // 📌 שימוש ב-cookies.txt
   };
 }
+
 
 function getDownloadAudioOptions() {
   const options = {
@@ -36,12 +38,14 @@ function getDownloadAudioOptions() {
     forceOverwrites: true,
     audioFormat: AUDIO_FILE_FORMAT,
     o: env.AUDIO_FILE_TEMPLATE,
+    cookies: "/github/workspace/cookies.txt",  // 📌 שימוש ב-cookies.txt
   };
   if (env.POSTPROCESSOR_ARGS.length > 0) {
     options.postprocessorArgs = env.POSTPROCESSOR_ARGS;
   }
   return options;
 }
+
 
 async function getVideoInfo(videoId) {
   logger.info(`Getting JSON video info for video id ${videoId}`);
@@ -51,6 +55,7 @@ async function getVideoInfo(videoId) {
       {
         ...youtubeDlOptions,
         dumpSingleJson: true,
+        cookies: "/github/workspace/cookies.txt",  // 📌 שימוש ב-cookies.txt
       },
       { timeout: CONNECTION_TIMEOUT_IN_MS }
     );
@@ -64,6 +69,7 @@ async function getVideoInfo(videoId) {
     throw new Error(`Unable to get video info: ${err}`);
   }
 }
+
 
 async function downloadThumbnail(videoId) {
   logger.info(`Downloading thumbnail for video id ${videoId}`);
