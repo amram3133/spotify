@@ -22,8 +22,22 @@ jobs:
       - name: Install dependencies (yt-dlp, FFmpeg, Chrome, Puppeteer)
         run: |
           pip install yt-dlp
-          sudo apt-get update && sudo apt-get install -y ffmpeg google-chrome-stable
-          npm install puppeteer --global
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg wget unzip
+          
+          # ✅ הורדת והתקנת Google Chrome
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo apt install -y ./google-chrome-stable_current_amd64.deb
+          
+          # ✅ התקנת Puppeteer
+          npm install puppeteer@21.9.0 --global
+          npm install puppeteer-core@21.9.0 --global
+          
+          # ✅ התקנת Chrome בתוך Puppeteer
+          npx puppeteer browsers install chrome
+
+          # ✅ וידוא ש-Chrome זמין
+          google-chrome --version
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
       - name: Create cookies.txt from GitHub Secrets
@@ -72,3 +86,4 @@ jobs:
           SPOTIFY_PASSWORD: ${{ secrets.SPOTIFY_PASSWORD }}
           EPISODE_PATH: /github/workspace
           YOUTUBE_COOKIES_PATH: "/github/workspace/cookies.txt"
+          PUPPETEER_EXECUTABLE_PATH: "/usr/bin/google-chrome"
