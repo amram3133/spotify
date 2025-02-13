@@ -1,81 +1,61 @@
-name: Upload Episode from YouTube To Spotify
+g up libswresample4:amd64 (7:6.1.1-3ubuntu5) ...
+Setting up va-driver-all:amd64 (2.20.0-2build1) ...
+Setting up libavcodec60:amd64 (7:6.1.1-3ubuntu5) ...
+Setting up librubberband2:amd64 (3.3.0+dfsg-2build1) ...
+Setting up libjack-jackd2-0:amd64 (1.9.21~dfsg-3ubuntu3) ...
+Setting up vdpau-driver-all:amd64 (1.5-2build1) ...
+Setting up libsord-0-0:amd64 (0.16.16-2build1) ...
+Setting up libpostproc57:amd64 (7:6.1.1-3ubuntu5) ...
+Setting up libsratom-0-0:amd64 (0.6.16-1build1) ...
+Setting up libsndfile1:amd64 (1.2.2-1ubuntu5) ...
+Setting up liblilv-0-0:amd64 (0.24.22-1build1) ...
+Setting up libswscale7:amd64 (7:6.1.1-3ubuntu5) ...
+Setting up libpulse0:amd64 (1:16.1+dfsg1-2ubuntu10.1) ...
+Setting up libavformat60:amd64 (7:6.1.1-3ubuntu5) ...
+Setting up libsphinxbase3t64:amd64 (0.8+5prealpha+1-17build2) ...
+Setting up libsdl2-2.0-0:amd64 (2.30.0+dfsg-1build3) ...
+Setting up libpocketsphinx3:amd64 (0.8.0+real5prealpha+1-15ubuntu5) ...
+Setting up libavfilter9:amd64 (7:6.1.1-3ubuntu5) ...
+Setting up libavdevice60:amd64 (7:6.1.1-3ubuntu5) ...
+Setting up ffmpeg (7:6.1.1-3ubuntu5) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+Processing triggers for libgdk-pixbuf-2.0-0:amd64 (2.42.10+dfsg-3ubuntu3.1) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.4) ...
 
-on:
-  push:
-    paths:
-      - episode.json
-    branches: [main]
+Running kernel seems to be up-to-date.
 
-jobs:
-  upload_episode:
-    runs-on: ubuntu-latest
+No services need to be restarted.
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+No containers need to be restarted.
 
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.9'
+No user sessions are running outdated binaries.
 
-      - name: Install dependencies (yt-dlp, FFmpeg, Puppeteer)
-        run: |
-          pip install yt-dlp
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg wget unzip
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
 
-          # ✅ התקנת Puppeteer עם Chromium מובנה
-          npm install puppeteer@latest --global
+added 97 packages in 10s
 
-          # ✅ בדיקה אם Puppeteer מותקן כמו שצריך
-          node -e "console.log(require('puppeteer').executablePath());"
+7 packages are looking for funding
+  run `npm fund` for details
+node:internal/modules/cjs/loader:1228
+  throw err;
+  ^
 
-      # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
-      - name: Create cookies.txt from GitHub Secrets
-        run: |
-          echo "${{ secrets.YOUTUBE_COOKIES }}" | tr -d '\r' > cookies.txt
-          echo "✅ Created cookies.txt successfully!"
+Error: Cannot find module 'puppeteer'
+Require stack:
+- /home/runner/work/spotify/spotify/[eval]
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1225:15)
+    at Module._load (node:internal/modules/cjs/loader:1051:27)
+    at Module.require (node:internal/modules/cjs/loader:1311:19)
+    at require (node:internal/modules/helpers:179:18)
+    at [eval]:1:13
+    at runScriptInThisContext (node:internal/vm:209:10)
+    at node:internal/process/execution:118:14
+    at [eval]-wrapper:6:24
+    at runScript (node:internal/process/execution:101:62)
+    at evalScript (node:internal/process/execution:133:3) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [ '/home/runner/work/spotify/spotify/[eval]' ]
+}
 
-      # ✅ בדיקה אם הקובץ `cookies.txt` נוצר כהלכה
-      - name: Debug cookies file
-        run: |
-          echo "===== Debugging cookies.txt ====="
-          if [ -f cookies.txt ]; then
-            echo "✅ cookies.txt exists!"
-          else
-            echo "❌ cookies.txt is missing!"
-            exit 1
-          fi
-          echo "===== Showing first 20 lines of cookies.txt ====="
-          head -n 20 cookies.txt
-          echo "===== Showing special characters ====="
-          od -c cookies.txt
-
-      # ✅ הורדת הסרטון מ-YouTube עם `cookies.txt`
-      - name: Download YouTube Video (Full Video)
-        run: |
-          yt-dlp -f "bv*[ext=mp4]+ba*[ext=m4a]/b[ext=mp4]" --merge-output-format mp4 \
-          --cookies cookies.txt \
-          -o "episode.mp4" "$(jq -r '.id' episode.json)"
-
-      # ✅ בדיקה אם קובץ הווידאו קיים
-      - name: Verify Video File
-        run: |
-          if [ -f "episode.mp4" ]; then
-            echo "✅ Video file exists: episode.mp4"
-            ls -lh episode.mp4
-          else
-            echo "❌ Video file is missing!"
-            exit 1
-          fi
-
-      # ✅ העלאת הסרטון ל-Spotify תוך שימוש ב-Puppeteer עם Chromium מובנה
-      - name: Upload Video Episode to Spotify (Using Puppeteer)
-        uses: ./
-        env:
-          SPOTIFY_EMAIL: ${{ secrets.SPOTIFY_EMAIL }}
-          SPOTIFY_PASSWORD: ${{ secrets.SPOTIFY_PASSWORD }}
-          EPISODE_PATH: /github/workspace
-          YOUTUBE_COOKIES_PATH: "/github/workspace/cookies.txt"
-          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: false
+Node.js v20.18.2
+Error: Process completed with exit code 1.
