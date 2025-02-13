@@ -19,8 +19,10 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install yt-dlp
-        run: pip install yt-dlp
+      - name: Install yt-dlp and FFmpeg
+        run: |
+          pip install yt-dlp
+          sudo apt-get update && sudo apt-get install -y ffmpeg
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
       - name: Create cookies.txt from GitHub Secrets
@@ -46,7 +48,7 @@ jobs:
       # ✅ הורדת הסרטון מ-YouTube עם `cookies.txt`
       - name: Download YouTube Video (Full Video)
         run: |
-          yt-dlp -f bestvideo+bestaudio --merge-output-format mp4 \
+          yt-dlp -f "bv*[ext=mp4]+ba*[ext=m4a]/b[ext=mp4]" --merge-output-format mp4 \
           --cookies cookies.txt \
           -o "episode.mp4" "$(jq -r '.id' episode.json)"
 
