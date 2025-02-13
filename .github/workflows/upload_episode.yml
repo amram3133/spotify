@@ -19,34 +19,17 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install dependencies (yt-dlp, FFmpeg, Chrome, Puppeteer)
+      - name: Install dependencies (yt-dlp, FFmpeg, Puppeteer)
         run: |
           pip install yt-dlp
           sudo apt-get update
           sudo apt-get install -y ffmpeg wget unzip
 
-          # ✅ הורדת והתקנת Google Chrome
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo apt install -y ./google-chrome-stable_current_amd64.deb
-
-          # ✅ התקנת Puppeteer
+          # ✅ התקנת Puppeteer עם Chromium מובנה
           npm install puppeteer@latest --global
-          npm install puppeteer-core@latest --global
 
-          # ✅ התקנת Chrome בתוך Puppeteer
-          npx puppeteer browsers install chrome
-
-          # ✅ בדיקת גרסאות
-          google-chrome-stable --version || echo "Chrome not found!"
-          npx puppeteer --version
-
-      - name: Debug Chrome Path
-        run: |
-          echo "🔎 Checking Chrome installation..."
-          which google-chrome || echo "❌ google-chrome not found"
-          which google-chrome-stable || echo "❌ google-chrome-stable not found"
-          which chromium || echo "❌ chromium not found"
-          echo "✅ If any of the above commands returned a path, use it for Puppeteer."
+          # ✅ בדיקה אם Puppeteer מותקן כמו שצריך
+          node -e "console.log(require('puppeteer').executablePath());"
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
       - name: Create cookies.txt from GitHub Secrets
@@ -87,12 +70,12 @@ jobs:
             exit 1
           fi
 
-      # ✅ העלאת הסרטון ל-Spotify תוך שימוש בנתיב הנכון של Chrome
-      - name: Upload Video Episode to Spotify (Using Cookies)
+      # ✅ העלאת הסרטון ל-Spotify תוך שימוש ב-Puppeteer עם Chromium מובנה
+      - name: Upload Video Episode to Spotify (Using Puppeteer)
         uses: ./
         env:
           SPOTIFY_EMAIL: ${{ secrets.SPOTIFY_EMAIL }}
           SPOTIFY_PASSWORD: ${{ secrets.SPOTIFY_PASSWORD }}
           EPISODE_PATH: /github/workspace
           YOUTUBE_COOKIES_PATH: "/github/workspace/cookies.txt"
-          PUPPETEER_EXECUTABLE_PATH: "/usr/bin/google-chrome-stable"
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: false
