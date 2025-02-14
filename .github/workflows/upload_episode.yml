@@ -22,8 +22,7 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install yt-dlp
-          npm install puppeteer@latest  # ✅ מתקין Puppeteer עם Chrome מובנה
-          npx puppeteer browsers install chrome  # ✅ מתקין את הדפדפן!
+          npm install puppeteer@latest  # ✅ מתקין Puppeteer עם Chromium מובנה!
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
       - name: Create cookies.txt from GitHub Secrets
@@ -64,7 +63,7 @@ jobs:
             exit 1
           fi
 
-      # ✅ העלאת הסרטון ל-Spotify תוך שימוש ב-`cookies.txt`
+      # ✅ העלאת הסרטון ל-Spotify תוך שימוש ב-Puppeteer עם Chromium מובנה
       - name: Upload Video Episode to Spotify (Using Puppeteer)
         uses: ./
         env:
@@ -72,4 +71,4 @@ jobs:
           SPOTIFY_PASSWORD: ${{ secrets.SPOTIFY_PASSWORD }}
           EPISODE_PATH: /github/workspace
           YOUTUBE_COOKIES_PATH: "/github/workspace/cookies.txt"
-          CHROME_PATH: "/home/runner/.cache/puppeteer/chrome/linux-*/chrome"  # ✅ הגדרת נתיב הדפדפן!
+          PUPPETEER_EXECUTABLE_PATH: "$(node -e 'console.log(require(\"puppeteer\").executablePath())')"  # ✅ גורם ל-Puppeteer להשתמש ב-Chromium המובנה!
