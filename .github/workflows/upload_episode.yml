@@ -22,6 +22,9 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install yt-dlp
+          sudo add-apt-repository -y ppa:savoury1/ffmpeg4  # ✅ מתקין FFmpeg עם תמיכה בגרסאות חדשות
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
           npm install puppeteer@latest  # ✅ מתקין Puppeteer עם Chromium מובנה!
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
@@ -45,7 +48,7 @@ jobs:
           echo "===== Showing special characters ====="
           od -c cookies.txt
 
-     # ✅ הורדת הווידאו והשמע בנפרד
+      # ✅ הורדת הווידאו והשמע בנפרד
       - name: Download YouTube Video and Audio Separately
         run: |
           yt-dlp -f bestvideo -o "video.mp4" --cookies cookies.txt "$(jq -r '.id' episode.json)"
