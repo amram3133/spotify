@@ -19,17 +19,11 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           pip install yt-dlp
-          sudo apt update && sudo apt install -y google-chrome-stable ffmpeg
-
-- name: Install Puppeteer with Built-in Chrome
-  run: |
-    npm install puppeteer@latest
-    npx puppeteer browsers install chrome
-
-
+          npm install puppeteer@latest  # ✅ מתקין Puppeteer עם Chrome מובנה
+          npx puppeteer browsers install chrome  # ✅ מתקין את הדפדפן!
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
       - name: Create cookies.txt from GitHub Secrets
@@ -49,6 +43,8 @@ jobs:
           fi
           echo "===== Showing first 20 lines of cookies.txt ====="
           head -n 20 cookies.txt
+          echo "===== Showing special characters ====="
+          od -c cookies.txt
 
       # ✅ הורדת הסרטון מ-YouTube עם `cookies.txt`
       - name: Download YouTube Video (Full Video)
@@ -57,7 +53,7 @@ jobs:
           --cookies cookies.txt \
           -o "episode.mp4" "$(jq -r '.id' episode.json)"
 
-      # ✅ בדיקה אם קובץ הווידאו נוצר
+      # ✅ בדיקה אם קובץ הווידאו קיים
       - name: Verify Video File
         run: |
           if [ -f "episode.mp4" ]; then
@@ -68,19 +64,12 @@ jobs:
             exit 1
           fi
 
-      # ✅ התקנת Puppeteer ודפדפן Chrome
-      - name: Install Puppeteer and Chrome
-        run: |
-          npm install puppeteer
-          sudo apt install -y google-chrome-stable
-          echo "✅ Puppeteer and Chrome installed successfully!"
-
-      # ✅ העלאת הסרטון ל-Spotify תוך שימוש ב-Puppeteer
-      - name: Upload Video Episode to Spotify (Using Cookies)
+      # ✅ העלאת הסרטון ל-Spotify תוך שימוש ב-`cookies.txt`
+      - name: Upload Video Episode to Spotify (Using Puppeteer)
         uses: ./
         env:
           SPOTIFY_EMAIL: ${{ secrets.SPOTIFY_EMAIL }}
           SPOTIFY_PASSWORD: ${{ secrets.SPOTIFY_PASSWORD }}
-          EPISODE_PATH: "/github/workspace"
-          CHROME_PATH: "/usr/bin/google-chrome-stable"
+          EPISODE_PATH: /github/workspace
           YOUTUBE_COOKIES_PATH: "/github/workspace/cookies.txt"
+          CHROME_PATH: "/home/runner/.cache/puppeteer/chrome/linux-*/chrome"  # ✅ הגדרת נתיב הדפדפן!
