@@ -45,14 +45,14 @@ jobs:
           echo "===== Showing special characters ====="
           od -c cookies.txt
 
-      # ✅ הורדת הסרטון מ-YouTube עם `cookies.txt`
+      # ✅ הורדת הסרטון מ-YouTube עם `cookies.txt` **כולל וידאו ואודיו**
       - name: Download YouTube Video (Full Video)
         run: |
           yt-dlp -f bestvideo+bestaudio --merge-output-format mp4 \
           --cookies cookies.txt \
           -o "episode.mp4" "$(jq -r '.id' episode.json)"
 
-      # ✅ בדיקה אם קובץ הווידאו קיים
+      # ✅ בדיקה אם קובץ הווידאו נוצר
       - name: Verify Video File
         run: |
           if [ -f "episode.mp4" ]; then
@@ -63,7 +63,7 @@ jobs:
             exit 1
           fi
 
-      # ✅ העלאת הסרטון ל-Spotify תוך שימוש ב-Puppeteer עם Chromium מובנה
+      # ✅ העלאת הסרטון ל-Spotify **תוך שימוש ב-Chromium מובנה**
       - name: Upload Video Episode to Spotify (Using Puppeteer)
         uses: ./
         env:
@@ -71,4 +71,4 @@ jobs:
           SPOTIFY_PASSWORD: ${{ secrets.SPOTIFY_PASSWORD }}
           EPISODE_PATH: /github/workspace
           YOUTUBE_COOKIES_PATH: "/github/workspace/cookies.txt"
-          PUPPETEER_EXECUTABLE_PATH: "$(node -e 'console.log(require(\"puppeteer\").executablePath())')"  # ✅ גורם ל-Puppeteer להשתמש ב-Chromium המובנה!
+          PUPPETEER_EXECUTABLE_PATH: "$(node -e 'console.log(require(\"puppeteer\").executablePath())')"  # ✅ Puppeteer ייקח את Chromium מהתקנה פנימית!
