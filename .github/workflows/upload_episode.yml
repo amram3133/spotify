@@ -45,12 +45,17 @@ jobs:
           echo "===== Showing special characters ====="
           od -c cookies.txt
 
-      # ✅ הורדת הסרטון מ-YouTube עם `cookies.txt` **כולל וידאו ואודיו**
-      - name: Download YouTube Video (Full Video)
+     # ✅ הורדת הווידאו והשמע בנפרד
+      - name: Download YouTube Video and Audio Separately
         run: |
-          yt-dlp -f bestvideo+bestaudio --merge-output-format mp4 \
-          --cookies cookies.txt \
-          -o "episode.mp4" "$(jq -r '.id' episode.json)"
+          yt-dlp -f bestvideo -o "video.mp4" --cookies cookies.txt "$(jq -r '.id' episode.json)"
+          yt-dlp -f bestaudio -o "audio.m4a" --cookies cookies.txt "$(jq -r '.id' episode.json)"
+
+      # ✅ **חיבור הווידאו והשמע לקובץ אחד באמצעות FFmpeg**
+      - name: Merge Video and Audio into episode.mp4
+        run: |
+          ffmpeg -i video.mp4 -i audio.m4a -c:v copy -c:a aac -strict experimental episode.mp4
+          echo "✅ Merged video and audio successfully!"
 
       # ✅ בדיקה אם קובץ הווידאו נוצר
       - name: Verify Video File
