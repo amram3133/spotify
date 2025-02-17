@@ -21,15 +21,23 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          # התקנה של yt-dlp
           pip install yt-dlp
+
+          # התקנה של ffmpeg
           sudo apt-get update
-          sudo apt-get install -y ffmpeg  # ✅ מתקין FFmpeg ממקור יציב!
-          npm install puppeteer@20.4.0  # ✅ מתקין Puppeteer בגירסה תקינה!
-          
-      # ✅ **הגדרת הנתיב לדפדפן Puppeteer**
+          sudo apt-get install -y ffmpeg
+
+          # התקנה של גרסה "ישנה" ויציבה של Puppeteer
+          npm install puppeteer@19.11.1
+
+          # בדיקה שהתקנה הצליחה
+          node -e "console.log('Puppeteer version:', require('puppeteer/package.json').version)"
+
+      # ✅ הגדרת הנתיב הפנימי של Chromium שבא עם Puppeteer
       - name: Set Puppeteer Executable Path
         run: |
-          echo "PUPPETEER_EXECUTABLE_PATH=$(npx puppeteer browsers path chrome-stable || true)" >> $GITHUB_ENV
+          echo "PUPPETEER_EXECUTABLE_PATH=$(node -e \"console.log(require('puppeteer').executablePath())\")" >> $GITHUB_ENV
           echo "✅ Set Puppeteer Executable Path!"
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
@@ -77,7 +85,7 @@ jobs:
           fi
 
 
-      # ✅ **העלאת הסרטון ל-Spotify תוך שימוש ב-Puppeteer**
+   # ✅ העלאת הסרטון ל-Spotify **תוך שימוש ב-Chromium שבא עם Puppeteer**
       - name: Upload Video Episode to Spotify (Using Puppeteer)
         uses: ./
         env:
@@ -85,4 +93,5 @@ jobs:
           SPOTIFY_PASSWORD: ${{ secrets.SPOTIFY_PASSWORD }}
           EPISODE_PATH: /github/workspace
           YOUTUBE_COOKIES_PATH: "/github/workspace/cookies.txt"
+          CHROME_PATH: ${{ env.PUPPETEER_EXECUTABLE_PATH }}  # ✅ מצביע על Chromium שהגיע עם Puppeteer!
           CHROME_PATH: ${{ env.PUPPETEER_EXECUTABLE_PATH }}  # ✅ נתיב לפלטפורמת Chromium מותקנת!
