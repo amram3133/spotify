@@ -84,8 +84,7 @@ jobs:
             exit 1
           fi
 
-
-   # ✅ העלאת הסרטון ל-Spotify **תוך שימוש ב-Chromium שבא עם Puppeteer**
+      # ✅ העלאת הסרטון ל-Spotify **תוך שימוש ב-Chromium שבא עם Puppeteer**
       - name: Upload Video Episode to Spotify (Using Puppeteer)
         uses: ./
         env:
@@ -94,4 +93,3 @@ jobs:
           EPISODE_PATH: /github/workspace
           YOUTUBE_COOKIES_PATH: "/github/workspace/cookies.txt"
           CHROME_PATH: ${{ env.PUPPETEER_EXECUTABLE_PATH }}  # ✅ מצביע על Chromium שהגיע עם Puppeteer!
-          CHROME_PATH: ${{ env.PUPPETEER_EXECUTABLE_PATH }}  # ✅ נתיב לפלטפורמת Chromium מותקנת!
