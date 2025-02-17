@@ -24,8 +24,9 @@ jobs:
           pip install yt-dlp
           sudo apt-get update
           sudo apt-get install -y snapd
-          sudo snap install ffmpeg  # ✅ מתקין FFmpeg מ-Snap (פתרון שעובד תמיד!)
+          sudo snap install ffmpeg  # ✅ מתקין FFmpeg ממקור יציב!
           npm install puppeteer@latest  # ✅ מתקין Puppeteer עם Chromium מובנה!
+          npx puppeteer browsers install chrome  # ✅ מתקין Chromium בצורה תקינה
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
       - name: Create cookies.txt from GitHub Secrets
@@ -71,7 +72,7 @@ jobs:
             exit 1
           fi
 
-      # ✅ העלאת הסרטון ל-Spotify **תוך שימוש ב-Chromium מובנה**
+    # ✅ העלאת הסרטון ל-Spotify **תוך שימוש ב-Chromium מובנה**
       - name: Upload Video Episode to Spotify (Using Puppeteer)
         uses: ./
         env:
@@ -79,4 +80,4 @@ jobs:
           SPOTIFY_PASSWORD: ${{ secrets.SPOTIFY_PASSWORD }}
           EPISODE_PATH: /github/workspace
           YOUTUBE_COOKIES_PATH: "/github/workspace/cookies.txt"
-          PUPPETEER_EXECUTABLE_PATH: "$(node -e 'console.log(require(\"puppeteer\").executablePath())')"  # ✅ Puppeteer ייקח את Chromium מהתקנה פנימית!
+          CHROME_PATH: "/home/runner/.cache/puppeteer/chrome/linux-*"  # ✅ נתיב לפלטפורמת Chromium מותקנת!
