@@ -28,6 +28,12 @@ jobs:
           npm install puppeteer@latest  # ✅ מתקין Puppeteer עם Chromium מובנה!
           npx puppeteer browsers install chrome  # ✅ מתקין Chromium בצורה תקינה
 
+      # ✅ **הגדרת הנתיב לדפדפן Puppeteer**
+      - name: Set Puppeteer Executable Path
+        run: |
+          echo "PUPPETEER_EXECUTABLE_PATH=$(npx puppeteer browsers path chrome)" >> $GITHUB_ENV
+          echo "✅ Set Puppeteer Executable Path!"
+
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
       - name: Create cookies.txt from GitHub Secrets
         run: |
