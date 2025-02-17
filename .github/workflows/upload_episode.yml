@@ -18,20 +18,18 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: '3.9'
-
-      - name: Install Dependencies
+		  
+    - name: Install Dependencies
         run: |
           pip install yt-dlp
           sudo apt-get update
-          sudo apt-get install -y snapd
-          sudo snap install ffmpeg
-          npm install puppeteer@latest
-          npx puppeteer browsers install chrome
-
-      # ✅ הגדרת הנתיב לדפדפן Puppeteer
+          sudo apt-get install -y ffmpeg  # ✅ מתקין FFmpeg ממקור יציב!
+          npm install puppeteer@20.4.0  # ✅ מתקין Puppeteer בגירסה תקינה!
+          
+      # ✅ **הגדרת הנתיב לדפדפן Puppeteer**
       - name: Set Puppeteer Executable Path
         run: |
-          echo "PUPPETEER_EXECUTABLE_PATH=$(npx puppeteer browsers path chrome)" >> $GITHUB_ENV
+          echo "PUPPETEER_EXECUTABLE_PATH=$(npx puppeteer browsers path chrome-stable || true)" >> $GITHUB_ENV
           echo "✅ Set Puppeteer Executable Path!"
 
       # ✅ יצירת `cookies.txt` מתוך GitHub Secrets
@@ -78,7 +76,8 @@ jobs:
             exit 1
           fi
 
-      # ✅ העלאת הסרטון ל-Spotify, תוך שימוש בנתיב
+
+      # ✅ **העלאת הסרטון ל-Spotify תוך שימוש ב-Puppeteer**
       - name: Upload Video Episode to Spotify (Using Puppeteer)
         uses: ./
         env:
@@ -86,4 +85,4 @@ jobs:
           SPOTIFY_PASSWORD: ${{ secrets.SPOTIFY_PASSWORD }}
           EPISODE_PATH: /github/workspace
           YOUTUBE_COOKIES_PATH: "/github/workspace/cookies.txt"
-          CHROME_PATH: ${{ env.PUPPETEER_EXECUTABLE_PATH }}  # ✅ שימוש בערך שחישבנו
+          CHROME_PATH: ${{ env.PUPPETEER_EXECUTABLE_PATH }}  # ✅ נתיב לפלטפורמת Chromium מותקנת!
